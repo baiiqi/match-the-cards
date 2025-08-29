@@ -4,7 +4,7 @@
   user-select: none;
 }
 body {
-  background: linear-gradient(135deg, #1c1c1c, #2c2c2c);
+  background: #a0c4ff; /* Light blue background */
   font-family: 'Oswald', sans-serif;
   margin: 0;
   display: flex;
@@ -12,8 +12,8 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 1rem;
-  color: #ddd;
-  text-shadow: 0 0 5px #000;
+  color: #1a2a6c;
+  text-shadow: 0 0 2px #b0c9ff;
 }
 
 h1 {
@@ -22,16 +22,16 @@ h1 {
   letter-spacing: 4px;
   font-size: 2.8rem;
   text-transform: uppercase;
-  color: #f0a500;
+  color: #1a2a6c;
   text-shadow:
-    1px 1px 0 #000,
-    2px 2px 8px #a86d00;
+    1px 1px 1px #d0e2ff,
+    2px 2px 6px #2f5bb7;
 }
 
 #level-info {
   margin-bottom: 1rem;
   font-weight: 600;
-  color: #f0a500;
+  color: #1a2a6c;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -53,10 +53,10 @@ h1 {
   transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
   border-radius: 6px;
   box-shadow:
-    inset 0 0 12px #0008,
-    0 5px 15px rgba(0, 0, 0, 0.8);
-  background: linear-gradient(145deg, #2e2e2e, #1b1b1b);
-  border: 2px solid #f0a500;
+    inset 0 0 12px #ffffffcc,
+    0 5px 15px rgba(26, 42, 108, 0.25);
+  background: #ffffff; /* White cards */
+  border: 2px solid #1a2a6c; /* Dark blue border */
 }
 
 .card.flipped {
@@ -74,26 +74,21 @@ h1 {
   justify-content: center;
   align-items: center;
   font-weight: 700;
-  box-shadow: inset 0 0 10px #0008;
   user-select: none;
 }
 
-/* Card front: dark metallic/steel look with ridges */
+/* Card front: white with subtle ridges */
 .card-front {
-  background: linear-gradient(135deg, #3a3a3a 0%, #222 100%);
-  border: 1.5px solid #f0a500;
-  box-shadow:
-    inset 0 6px 10px #0009,
-    inset 0 -6px 10px #a87300aa;
+  background: #ffffff;
+  border: 1.5px solid #1a2a6c;
   position: relative;
   overflow: hidden;
   flex-direction: column;
-  font-size: 1.1rem;
-  color: #f0a500;
+  font-size: 1.4rem;
+  color: #1a2a6c;
   text-transform: uppercase;
   letter-spacing: 3px;
-  justify-content: flex-end;
-  padding-bottom: 10px;
+  justify-content: center;
 }
 
 /* Ridged effect using repeating linear gradient */
@@ -105,34 +100,34 @@ h1 {
   background:
     repeating-linear-gradient(
       45deg,
-      rgba(240, 165, 0, 0.1),
-      rgba(240, 165, 0, 0.1) 5px,
-      rgba(240, 165, 0, 0.2) 7px,
-      rgba(240, 165, 0, 0.2) 11px
+      rgba(26, 42, 108, 0.06),
+      rgba(26, 42, 108, 0.06) 5px,
+      rgba(26, 42, 108, 0.1) 7px,
+      rgba(26, 42, 108, 0.1) 11px
     );
   border-radius: 6px;
   z-index: 1;
 }
 
-/* Strong text on front */
+/* Text "b" on front */
 .card-front .design-text {
   font-family: 'Oswald', sans-serif;
-  font-size: 1.4rem;
+  font-size: 2.2rem;
   font-weight: 700;
-  color: #f0a500;
+  color: #1a2a6c;
   text-shadow:
-    1px 1px 0 #000,
-    2px 2px 8px #a86d00;
+    1px 1px 1px #d0e2ff,
+    2px 2px 6px #2f5bb7aa;
   user-select: none;
   position: relative;
   z-index: 2;
   margin: 0 auto;
 }
 
-/* Card back: dark gold with icon */
+/* Card back: dark blue background with icon */
 .card-back {
-  background: #f0a500;
-  color: #222;
+  background: #1a2a6c;
+  color: #a0c4ff;
   transform: rotateY(180deg);
   font-size: 3.2rem;
   display: flex;
@@ -140,15 +135,15 @@ h1 {
   align-items: center;
   border-radius: 6px;
   box-shadow:
-    0 5px 15px #a86d00cc;
-  text-shadow: 1px 1px 0 #0005;
+    0 5px 15px #1a2a6ccc;
+  text-shadow: 1px 1px 0 #153d7d99;
 }
 
 /* Game info */
 #rounds-info {
   margin-top: 15px;
   font-weight: 600;
-  color: #f0a500;
+  color: #1a2a6c;
   letter-spacing: 2px;
   text-transform: uppercase;
 }
@@ -156,21 +151,21 @@ h1 {
 /* Button styles */
 button {
   margin-top: 20px;
-  background: #f0a500;
+  background: #1a2a6c;
   border: none;
   padding: 12px 26px;
-  color: #222;
+  color: #a0c4ff;
   font-weight: 700;
   font-size: 1.1rem;
   border-radius: 6px;
   cursor: pointer;
-  box-shadow: 0 3px 8px rgba(168, 109, 0, 0.8);
+  box-shadow: 0 3px 8px rgba(26, 42, 108, 0.7);
   transition: background 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   font-family: 'Oswald', sans-serif;
 }
 button:hover {
-  background: #a86d00;
+  background: #153d7d;
 }
 
