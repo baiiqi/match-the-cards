@@ -1,6 +1,13 @@
-// Card icons (using emojis for simplicity)
+// Manly card icons - weapons, animals, gears, tools
 const cardIcons = [
-  '🐘', '🌺', '🦜', '🌿', '🛖', '🎋', '🔥', '🌙'
+  '🦁', // lion - strength
+  '⚙️', // gear - machinery
+  '🪓', // axe - rugged tool
+  '🦅', // eagle - sharp vision
+  '🛡️', // shield - defense
+  '🔥', // fire - power
+  '🏹', // bow and arrow - precision
+  '🗡️'  // dagger - sharpness
 ];
 
 // Game variables
@@ -17,12 +24,12 @@ const roundsInfo = document.getElementById('rounds-info');
 const levelInfo = document.getElementById('level-info');
 const restartBtn = document.getElementById('restart');
 
-// Sound effects
+// Sound effects with more impact sounds
 const sounds = {
-  flip: new Audio('https://freesound.org/data/previews/341/341695_3248244-lq.mp3'),
-  match: new Audio('https://freesound.org/data/previews/170/170144_2437358-lq.mp3'),
-  shuffle: new Audio('https://freesound.org/data/previews/352/352664_5121236-lq.mp3'),
-  win: new Audio('https://freesound.org/data/previews/276/276020_5121236-lq.mp3')
+  flip: new Audio('https://actions.google.com/sounds/v1/impacts/wood_plank_flicks.ogg'),
+  match: new Audio('https://actions.google.com/sounds/v1/cartoon/cartoon_boing.ogg'),
+  shuffle: new Audio('https://actions.google.com/sounds/v1/alarms/phone_alerts_and_rings.ogg'),
+  win: new Audio('https://actions.google.com/sounds/v1/alarms/digital_watch_alarm_long.ogg')
 };
 
 function playSound(name) {
@@ -44,9 +51,8 @@ function shuffleArray(arr) {
 
 // Create the deck of cards (16 total, 8 pairs)
 function createDeck() {
-  // Take first 8 icons
   let deck = cardIcons.slice(0, totalCards / 2);
-  deck = deck.concat(deck); // duplicate for pairs
+  deck = deck.concat(deck); // duplicate pairs
   deck = shuffleArray(deck);
   return deck;
 }
@@ -62,10 +68,9 @@ function renderCards() {
 
     const cardFront = document.createElement('div');
     cardFront.classList.add('card-face', 'card-front');
-    // Add ethnic style design text "baiiqi"
     const designText = document.createElement('div');
     designText.className = 'design-text';
-    designText.textContent = 'baiiqi';
+    designText.textContent = 'MATCH';
     cardFront.appendChild(designText);
 
     const cardBack = document.createElement('div');
@@ -113,7 +118,6 @@ function unflipCards() {
 function checkMatch() {
   const [card1, card2] = flippedCards;
   if (card1.dataset.icon === card2.dataset.icon) {
-    // Matched
     matchedPairs++;
     card1.classList.add('matched');
     card2.classList.add('matched');
@@ -123,24 +127,22 @@ function checkMatch() {
     if (matchedPairs === totalCards / 2) {
       setTimeout(() => {
         playSound('win');
-        alert(`🎉 Level ${level} Complete!`);
+        alert(`🔥 Level ${level} Complete! 🔥`);
         if (level < maxLevels) {
           level++;
           startLevel(level);
         } else {
-          alert('🎉 You completed all levels! Great job!');
+          alert('💥 You conquered all levels! 💥');
           resetGame();
         }
-      }, 500);
+      }, 600);
     }
   } else {
-    // Not matched, flip back after delay
     setTimeout(() => {
       unflipCards();
-    }, 1200);
+    }, 1300);
   }
 
-  // Check for shuffle condition if max rounds reached and game not finished
   if (rounds >= maxRounds && matchedPairs < totalCards / 2) {
     shuffleCards();
   }
@@ -152,10 +154,8 @@ function shuffleCards() {
   rounds = 0;
   roundsInfo.textContent = `Rounds: ${rounds} / ${maxRounds}`;
 
-  // Shuffle card icons and update dataset.icon for each card
   cards = shuffleArray(cards);
 
-  // Update DOM cards accordingly, keeping matched cards flipped and disabled
   const cardDivs = [...document.querySelectorAll('.card')];
   cardDivs.forEach((cardDiv, index) => {
     cardDiv.dataset.icon = cards[index];
@@ -185,5 +185,5 @@ function resetGame() {
 
 restartBtn.addEventListener('click', resetGame);
 
-// Start the game
 resetGame();
+
