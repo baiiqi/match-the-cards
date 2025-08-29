@@ -1,155 +1,189 @@
-const gameBoard = document.getElementById('gameBoard');
-const turnIndicator = document.getElementById('turnIndicator');
-const scoreBoard = document.getElementById('scoreBoard');
-const restartBtn = document.getElementById('restartBtn');
+// Card icons (using emojis for simplicity)
+const cardIcons = [
+  '🐘', '🌺', '🦜', '🌿', '🛖', '🎋', '🔥', '🌙'
+];
 
-const totalPairs = 8; // total pairs of cards
+// Game variables
 let cards = [];
 let flippedCards = [];
-let matchedCardsCount = 0;
-let currentPlayer = 1;
-let scores = {1: 0, 2: 0};
-let lockBoard = false;
+let matchedPairs = 0;
+let rounds = 0;
+let level = 1;
+const maxRounds = 20;
+const maxLevels = 3;
+const totalCards = 16; // 8 pairs
+const gameContainer = document.getElementById('game');
+const roundsInfo = document.getElementById('rounds-info');
+const levelInfo = document.getElementById('level-info');
+const restartBtn = document.getElementById('restart');
 
-// Card symbols (you can change or add emojis/icons)
-const cardSymbols = ['🍎','🍌','🍇','🍉','🍓','🥝','🍒','🍍'];
+// Sound effects
+const sounds = {
+  flip: new Audio('https://freesound.org/data/previews/341/341695_3248244-lq.mp3'),
+  match: new Audio('https://freesound.org/data/previews/170/170144_2437358-lq.mp3'),
+  shuffle: new Audio('https://freesound.org/data/previews/352/352664_5121236-lq.mp3'),
+  win: new Audio('https://freesound.org/data/previews/276/276020_5121236-lq.mp3')
+};
 
-// Create shuffled deck with pairs
-function createDeck() {
-  const deck = [];
-  cardSymbols.forEach(symbol => {
-    deck.push(symbol);
-    deck.push(symbol);
-  });
-  return shuffle(deck);
+function playSound(name) {
+  if (sounds[name]) {
+    sounds[name].currentTime = 0;
+    sounds[name].play();
+  }
 }
 
-// Fisher-Yates shuffle
-function shuffle(array) {
-  let currentIndex = array.length, randomIndex;
-
-  while (currentIndex !== 0) {
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
-    [array[currentIndex], array[randomIndex]] = 
-      [array[randomIndex], array[currentIndex]];
+// Fisher-Yates Shuffle
+function shuffleArray(arr) {
+  let array = arr.slice();
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
 }
 
-// Build the game board
-function buildBoard() {
-  gameBoard.innerHTML = '';
-  cards = createDeck();
+// Create the deck of cards (16 total, 8 pairs)
+function createDeck() {
+  // Take first 8 icons
+  let deck = cardIcons.slice(0, totalCards / 2);
+  deck = deck.concat(deck); // duplicate for pairs
+  deck = shuffleArray(deck);
+  return deck;
+}
 
-  cards.forEach((symbol, index) => {
+// Render cards to the DOM
+function renderCards() {
+  gameContainer.innerHTML = '';
+  cards.forEach((icon, index) => {
     const card = document.createElement('div');
     card.classList.add('card');
-    card.dataset.symbol = symbol;
+    card.dataset.icon = icon;
     card.dataset.index = index;
 
-    card.innerHTML = `
-      <div class="cardInner">
-        <div class="cardFront">${symbol}</div>
-        <div class="cardBack"></div>
-      </div>
-    `;
-    card.addEventListener('click', () => onCardClick(card));
-    gameBoard.appendChild(card);
+    const cardFront = document.createElement('div');
+    cardFront.classList.add('card-face', 'card-front');
+    // Add ethnic style design text "baiiqi"
+    const designText = document.createElement('div');
+    designText.className = 'design-text';
+    designText.textContent = 'baiiqi';
+    cardFront.appendChild(designText);
+
+    const cardBack = document.createElement('div');
+    cardBack.classList.add('card-face', 'card-back');
+    cardBack.textContent = icon;
+
+    card.appendChild(cardFront);
+    card.appendChild(cardBack);
+
+    card.addEventListener('click', onCardClick);
+
+    gameContainer.appendChild(card);
   });
 }
 
-// Handle card click
-function onCardClick(card) {
-  if(lockBoard) return;
-  if(card.classList.contains('flipped') || card.classList.contains('removed')) return;
-  if(flippedCards.length === 2) return;
+function onCardClick(e) {
+  const card = e.currentTarget;
+  if (
+    flippedCards.length === 2 ||
+    card.classList.contains('flipped') ||
+    card.classList.contains('matched')
+  ) return;
 
   flipCard(card);
+  playSound('flip');
+
   flippedCards.push(card);
 
-  if(flippedCards.length === 2) {
-    lockBoard = true;
+  if (flippedCards.length === 2) {
+    rounds++;
+    roundsInfo.textContent = `Rounds: ${rounds} / ${maxRounds}`;
     checkMatch();
   }
 }
 
-// Flip card visually
 function flipCard(card) {
   card.classList.add('flipped');
 }
 
-// Unflip cards visually
-function unflipCards(cardsToUnflip) {
-  cardsToUnflip.forEach(card => card.classList.remove('flipped'));
+function unflipCards() {
+  flippedCards.forEach(card => card.classList.remove('flipped'));
+  flippedCards = [];
 }
 
-// Remove matched cards visually
-function removeCards(cardsToRemove) {
-  cardsToRemove.forEach(card => {
-    card.classList.add('removed');
-    // Remove event listener by cloning node (optional)
-    const newCard = card.cloneNode(true);
-    card.parentNode.replaceChild(newCard, card);
-  });
-}
-
-// Check if flipped cards match
 function checkMatch() {
   const [card1, card2] = flippedCards;
-  if(card1.dataset.symbol === card2.dataset.symbol) {
-    // Match!
-    removeCards(flippedCards);
-    matchedCardsCount += 2;
-    scores[currentPlayer]++;
-    updateScoreBoard();
+  if (card1.dataset.icon === card2.dataset.icon) {
+    // Matched
+    matchedPairs++;
+    card1.classList.add('matched');
+    card2.classList.add('matched');
+    playSound('match');
     flippedCards = [];
-    lockBoard = false;
 
-    if(matchedCardsCount === cards.length) {
+    if (matchedPairs === totalCards / 2) {
       setTimeout(() => {
-        alert(`Game Over! Player 1: ${scores[1]} | Player 2: ${scores[2]}`);
-        resetGame();
+        playSound('win');
+        alert(`🎉 Level ${level} Complete!`);
+        if (level < maxLevels) {
+          level++;
+          startLevel(level);
+        } else {
+          alert('🎉 You completed all levels! Great job!');
+          resetGame();
+        }
       }, 500);
     }
   } else {
-    // No match, flip back after short delay and switch player
+    // Not matched, flip back after delay
     setTimeout(() => {
-      unflipCards(flippedCards);
-      flippedCards = [];
-      lockBoard = false;
-      switchPlayer();
-    }, 1000);
+      unflipCards();
+    }, 1200);
+  }
+
+  // Check for shuffle condition if max rounds reached and game not finished
+  if (rounds >= maxRounds && matchedPairs < totalCards / 2) {
+    shuffleCards();
   }
 }
 
-// Switch turns
-function switchPlayer() {
-  currentPlayer = currentPlayer === 1 ? 2 : 1;
-  updateTurnIndicator();
-}
+function shuffleCards() {
+  playSound('shuffle');
+  alert('Too many rounds! Shuffling cards...');
+  rounds = 0;
+  roundsInfo.textContent = `Rounds: ${rounds} / ${maxRounds}`;
 
-// Update turn display
-function updateTurnIndicator() {
-  turnIndicator.textContent = `Player ${currentPlayer}'s turn`;
-}
+  // Shuffle card icons and update dataset.icon for each card
+  cards = shuffleArray(cards);
 
-// Update score display
-function updateScoreBoard() {
-  scoreBoard.textContent = `Player 1: ${scores[1]} \u00A0\u00A0 Player 2: ${scores[2]}`;
-}
+  // Update DOM cards accordingly, keeping matched cards flipped and disabled
+  const cardDivs = [...document.querySelectorAll('.card')];
+  cardDivs.forEach((cardDiv, index) => {
+    cardDiv.dataset.icon = cards[index];
+    cardDiv.querySelector('.card-back').textContent = cards[index];
+    if (!cardDiv.classList.contains('matched')) {
+      cardDiv.classList.remove('flipped');
+      cardDiv.style.pointerEvents = 'auto';
+    }
+  });
 
-// Reset game and reshuffle
-function resetGame() {
-  matchedCardsCount = 0;
   flippedCards = [];
-  lockBoard = false;
-  scores = {1: 0, 2: 0};
-  currentPlayer = 1;
-  updateTurnIndicator();
-  updateScoreBoard();
-  buildBoard();
 }
 
-// Restart button click handler
+function startLevel(lvl) {
+  matchedPairs = 0;
+  rounds = 0;
+  cards = createDeck();
+  levelInfo.textContent = `Level: ${lvl} / ${maxLevels}`;
+  roundsInfo.textContent = `Rounds: ${rounds} / ${maxRounds}`;
+  renderCards();
+}
+
+function resetGame() {
+  level = 1;
+  startLevel(level);
+}
+
 restartBtn.addEventListener('click', resetGame);
+
+// Start the game
+resetGame();
