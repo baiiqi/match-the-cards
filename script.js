@@ -70,7 +70,7 @@ function renderCards() {
     cardFront.classList.add('card-face', 'card-front');
     const designText = document.createElement('div');
     designText.className = 'design-text';
-    designText.textContent = 'b';  // Changed to 'b'
+    designText.textContent = 'b';  // Card front text as 'b'
     cardFront.appendChild(designText);
 
     const cardBack = document.createElement('div');
@@ -91,7 +91,110 @@ function onCardClick(e) {
   if (
     flippedCards.length === 2 ||
     card.classList.contains('flipped') ||
-    card.classList.contains
+    card.classList.contains('matched')
+  ) {
+    return;
+  }
+
+  flipCard(card);
+}
+
+function flipCard(card) {
+  card.classList.add('flipped');
+  playSound('flip');
+  flippedCards.push(card);
+
+  if (flippedCards.length === 2) {
+    rounds++;
+    updateRounds();
+
+    setTimeout(checkMatch, 800);
+  }
+}
+
+function checkMatch() {
+  const [card1, card2] = flippedCards;
+
+  if (card1.dataset.icon === card2.dataset.icon) {
+    matchedPairs++;
+    card1.classList.add('matched');
+    card2.classList.add('matched');
+    playSound('match');
+    flippedCards = [];
+
+    if (matchedPairs === totalCards / 2) {
+      setTimeout(() => {
+        playSound('win');
+        alert(`✅ Level ${level} Complete! ✅`);
+        if (level < maxLevels) {
+          level++;
+          startLevel(level);
+        } else {
+          alert('🏆 You conquered all levels! 🏆');
+          resetGame();
+        }
+      }, 600);
+    }
+  } else {
+    setTimeout(() => {
+      unflipCards();
+    }, 1300);
+  }
+
+  if (rounds >= maxRounds && matchedPairs < totalCards / 2) {
+    setTimeout(() => {
+      shuffleCards();
+      alert('🔀 Cards reshuffled after 20 rounds!');
+    }, 1500);
+  }
+}
+
+function unflipCards() {
+  flippedCards.forEach(card => card.classList.remove('flipped'));
+  flippedCards = [];
+}
+
+function shuffleCards() {
+  cards = shuffleArray(cards);
+  matchedPairs = 0;
+  rounds = 0;
+  flippedCards = [];
+  updateRounds();
+  renderCards();
+  playSound('shuffle');
+}
+
+function updateRounds() {
+  roundsInfo.textContent = `Rounds: ${rounds} / ${maxRounds}`;
+  levelInfo.textContent = `Level: ${level} / ${maxLevels}`;
+}
+
+function startLevel(lvl) {
+  level = lvl;
+  rounds = 0;
+  matchedPairs = 0;
+  cards = createDeck();
+  updateRounds();
+  renderCards();
+}
+
+function resetGame() {
+  level = 1;
+  rounds = 0;
+  matchedPairs = 0;
+  cards = createDeck();
+  updateRounds();
+  renderCards();
+}
+
+restartBtn.addEventListener('click', () => {
+  if (confirm('Restart the game?')) {
+    resetGame();
+  }
+});
+
+// Initialize game
+resetGame();
 
 
 
