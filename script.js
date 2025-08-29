@@ -19,10 +19,20 @@ let level = 1;
 const maxRounds = 20;
 const maxLevels = 3;
 const totalCards = 16; // 8 pairs
+
 const gameContainer = document.getElementById('game');
 const roundsInfo = document.getElementById('rounds-info');
 const levelInfo = document.getElementById('level-info');
 const restartBtn = document.getElementById('restart');
+
+const currentPlayerEl = document.getElementById('current-player');
+const score1El = document.getElementById('score1');
+const score2El = document.getElementById('score2');
+const twoPlayerToggle = document.getElementById('two-player-toggle');
+
+let twoPlayers = false;
+let currentPlayer = 1;
+let scores = { 1: 0, 2: 0 };
 
 // Sound effects
 const sounds = {
@@ -87,14 +97,13 @@ function renderCards() {
 }
 
 function onCardClick(e) {
+  if (flippedCards.length === 2) return;
+
   const card = e.currentTarget;
   if (
-    flippedCards.length === 2 ||
     card.classList.contains('flipped') ||
     card.classList.contains('matched')
-  ) {
-    return;
-  }
+  ) return;
 
   flipCard(card);
 }
@@ -122,10 +131,24 @@ function checkMatch() {
     playSound('match');
     flippedCards = [];
 
+    if (twoPlayers) {
+      scores[currentPlayer]++;
+      updatePlayerUI();
+      // Same player goes again (no switch)
+    }
+
     if (matchedPairs === totalCards / 2) {
       setTimeout(() => {
         playSound('win');
-        alert(`✅ Level ${level} Complete! ✅`);
+        if (twoPlayers) {
+          let winner;
+          if (scores[1] > scores[2]) winner = 'Player 1 wins! 🎉';
+          else if (scores[2] > scores[1]) winner = 'Player 2 wins! 🎉';
+          else winner = "It's a tie!";
+          alert(`Level ${level} Complete! ${winner}`);
+        } else {
+          alert(`Level ${level} Complete!`);
+        }
         if (level < maxLevels) {
           level++;
           startLevel(level);
@@ -138,6 +161,10 @@ function checkMatch() {
   } else {
     setTimeout(() => {
       unflipCards();
+      if (twoPlayers) {
+        currentPlayer = currentPlayer === 1 ? 2 : 1;
+        updatePlayerUI();
+      }
     }, 1300);
   }
 
@@ -159,7 +186,10 @@ function shuffleCards() {
   matchedPairs = 0;
   rounds = 0;
   flippedCards = [];
+  currentPlayer = 1;
+  scores = { 1: 0, 2: 0 };
   updateRounds();
+  updatePlayerUI();
   renderCards();
   playSound('shuffle');
 }
@@ -169,32 +199,11 @@ function updateRounds() {
   levelInfo.textContent = `Level: ${level} / ${maxLevels}`;
 }
 
-function startLevel(lvl) {
-  level = lvl;
-  rounds = 0;
-  matchedPairs = 0;
-  cards = createDeck();
-  updateRounds();
-  renderCards();
-}
+function updatePlayerUI() {
+  currentPlayerEl.textContent = currentPlayer;
+  score1El.textContent = scores[1];
+  score2El.textContent = scores[2];
 
-function resetGame() {
-  level = 1;
-  rounds = 0;
-  matchedPairs = 0;
-  cards = createDeck();
-  updateRounds();
-  renderCards();
-}
-
-restartBtn.addEventListener('click', () => {
-  if (confirm('Restart the game?')) {
-    resetGame();
-  }
-});
-
-// Initialize game
-resetGame();
 
 
 
