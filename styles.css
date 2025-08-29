@@ -3,6 +3,7 @@
   box-sizing: border-box;
   user-select: none;
 }
+
 body {
   background: #a0c4ff; /* Light blue background */
   font-family: 'Oswald', sans-serif;
@@ -35,6 +36,27 @@ h1 {
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+
+#player-info {
+  margin-bottom: 1rem;
+  color: #1a2a6c;
+  font-weight: 600;
+  display: flex;
+  gap: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+}
+
+#two-player-label {
+  margin-bottom: 1rem;
+  color: #1a2a6c;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  letter-spacing: 1.5px;
+  font-size: 1rem;
+}
+
 #game {
   width: 440px;
   max-width: 95vw;
@@ -135,37 +157,6 @@ h1 {
   align-items: center;
   border-radius: 6px;
   box-shadow:
-    0 5px 15px #1a2a6ccc;
-  text-shadow: 1px 1px 0 #153d7d99;
-}
+    0
 
-/* Game info */
-#rounds-info {
-  margin-top: 15px;
-  font-weight: 600;
-  color: #1a2a6c;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-}
-
-/* Button styles */
-button {
-  margin-top: 20px;
-  background: #1a2a6c;
-  border: none;
-  padding: 12px 26px;
-  color: #a0c4ff;
-  font-weight: 700;
-  font-size: 1.1rem;
-  border-radius: 6px;
-  cursor: pointer;
-  box-shadow: 0 3px 8px rgba(26, 42, 108, 0.7);
-  transition: background 0.3s ease;
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  font-family: 'Oswald', sans-serif;
-}
-button:hover {
-  background: #153d7d;
-}
 
